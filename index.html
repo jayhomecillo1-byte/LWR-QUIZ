@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life, Works, and Writings of Rizal - 100-Item Interactive Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .font-serif-header {
+      font-family: 'Cinzel', serif;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-amber-900 text-amber-50 shadow-md border-b-4 border-amber-600 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-serif-header tracking-wider font-bold">Life, Works, and Writings of Rizal</h1>
+        <p class="text-xs text-amber-200">100-Item Comprehensive Mastery Quiz</p>
+      </div>
+
+      <!-- Quick Metrics & Mode -->
+      <div class="flex items-center gap-3">
+        <div class="bg-amber-950/60 px-3 py-1.5 rounded-lg border border-amber-800 text-right">
+          <span class="text-xs text-amber-300 block uppercase font-medium">Answered</span>
+          <span id="answered-counter" class="text-base font-bold text-white">0 / 100</span>
+        </div>
+        <div class="bg-amber-950/60 px-3 py-1.5 rounded-lg border border-amber-800 text-right">
+          <span class="text-xs text-amber-300 block uppercase font-medium">Current Score</span>
+          <span id="score-counter" class="text-base font-bold text-emerald-400">0 pts</span>
+        </div>
+        <button id="toggle-sidebar-btn" class="p-2 bg-amber-800 hover:bg-amber-700 rounded-lg text-white border border-amber-600 lg:hidden">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left / Drawer: Question Grid & Filter -->
+    <aside id="sidebar" class="hidden lg:block lg:col-span-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[calc(100vh-130px)] sticky top-24">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+        <h2 class="font-bold text-slate-800 text-base">Question Navigator</h2>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600" id="filter-status-label">All (100)</span>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="grid grid-cols-3 gap-1 mb-4 text-xs font-medium">
+        <button onclick="setFilter('all')" id="filter-all" class="py-1.5 px-2 bg-amber-100 text-amber-900 font-semibold rounded-lg text-center transition">All</button>
+        <button onclick="setFilter('unanswered')" id="filter-unanswered" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-center transition">Pending</button>
+        <button onclick="setFilter('flagged')" id="filter-flagged" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-center transition">Flagged</button>
+      </div>
+
+      <!-- Quick Question Selector Buttons -->
+      <div id="navigator-grid" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-2 overflow-y-auto flex-1 pr-1 scrollbar-thin">
+        <!-- Buttons injected dynamically -->
+      </div>
+
+      <!-- Summary Action -->
+      <div class="pt-4 border-t border-slate-100 mt-3 flex items-center justify-between">
+        <button onclick="openOverviewModal()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          Final Summary & Score
+        </button>
+      </div>
+    </aside>
+
+    <!-- Center Content: Card Display -->
+    <section class="lg:col-span-8 flex flex-col gap-4">
+
+      <!-- Progress Bar -->
+      <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+        <span class="text-xs font-semibold text-slate-500 min-w-max" id="progress-percent">0% Completed</span>
+        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+          <div id="progress-bar-fill" class="bg-gradient-to-r from-amber-600 to-amber-700 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col justify-between relative">
+
+        <!-- Card Top: Category, Number, Flag -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+              Question <span id="current-q-num">1</span> of 100
+            </span>
+            <div class="flex items-center gap-2">
+              <button id="flag-btn" onclick="toggleFlagCurrent()" class="text-slate-400 hover:text-amber-600 p-1.5 rounded-lg border border-slate-200 hover:border-amber-300 transition" title="Flag for review">
+                <svg id="flag-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Question Text -->
+          <h2 id="question-text" class="text-lg md:text-xl font-bold text-slate-900 leading-snug mb-6">
+            Loading question...
+          </h2>
+
+          <!-- Options List -->
+          <div id="options-container" class="space-y-3 mb-6">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Explanation / Rationale Box (Revealed upon selection) -->
+          <div id="explanation-box" class="hidden p-4 rounded-xl text-sm border transition duration-200 mb-4">
+            <!-- Dynamic feedback -->
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-between gap-3">
+          <button id="prev-btn" onclick="navigate(-1)" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold text-sm transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            Previous
+          </button>
+
+          <div class="flex items-center gap-2">
+            <button id="reset-q-btn" onclick="clearCurrentSelection()" class="text-xs text-slate-400 hover:text-rose-600 hover:underline px-2 py-1">
+              Reset Choice
+            </button>
+            <button id="next-btn" onclick="navigate(1)" class="px-6 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-semibold text-sm transition shadow-sm flex items-center gap-1.5">
+              Next
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Summary Modal -->
+  <div id="overview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-xl max-w-lg w-full p-6 md:p-8 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 class="text-2xl font-serif-header font-bold text-slate-900">Quiz Score & Review</h3>
+        <p class="text-xs text-slate-500 mt-1">Life, Works, and Writings of Rizal (100 Items)</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 text-center mb-6">
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+          <span class="text-xs text-slate-500 block font-medium">Answered</span>
+          <span id="modal-answered" class="text-lg font-bold text-slate-800">0 / 100</span>
+        </div>
+        <div class="bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
+          <span class="text-xs text-emerald-700 block font-medium">Correct</span>
+          <span id="modal-correct" class="text-lg font-bold text-emerald-700">0</span>
+        </div>
+        <div class="bg-amber-50 p-3 rounded-2xl border border-amber-100">
+          <span class="text-xs text-amber-800 block font-medium">Accuracy</span>
+          <span id="modal-accuracy" class="text-lg font-bold text-amber-800">0%</span>
+        </div>
+      </div>
+
+      <p id="modal-feedback-message" class="text-xs text-center text-slate-600 mb-6 px-4">
+        Keep going! Answer all 100 questions to see your complete performance summary.
+      </p>
+
+      <div class="flex gap-3">
+        <button onclick="closeOverviewModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+          Resume Quiz
+        </button>
+        <button onclick="resetWholeQuiz()" class="py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded-xl text-sm transition border border-rose-200">
+          Restart All
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Quiz Raw Data strictly derived from the 100-item questionnaire
+    const quizData = [
+      {
+        id: 1,
+        question: "Who authored Republic Act 1425, also known as the Rizal Law?",
+        options: ["Jose P. Laurel Sr.", "Claro M. Recto", "Manuel Quezon", "Sergio Osmeña"],
+        answer: 1,
+        rationale: "Senator Claro M. Recto was the main author and champion of the original bill that became RA 1425."
+      },
+      {
+        id: 2,
+        question: "Who co-sponsored the Rizal Law in the Senate?",
+        options: ["Manuel Roxas", "Ramon Magsaysay", "Jose P. Laurel Sr.", "Elpidio Quirino"],
+        answer: 2,
+        rationale: "Senator Jose P. Laurel Sr., as Chairman of the Committee on Education, co-sponsored and defended the measure."
+      },
+      {
+        id: 3,
+        question: "On what date was the Rizal Law (R.A. 1425) signed into law?",
+        options: ["June 12, 1946", "June 19, 1961", "June 12, 1956", "July 4, 1956"],
+        answer: 2,
+        rationale: "President Ramon Magsaysay signed RA 1425 into law on Flag Day, June 12, 1956."
+      },
+      {
+        id: 4,
+        question: "Why did the Catholic Church strongly oppose the Rizal Law?",
+        options: [
+          "It required students to memorize Rizal's poems",
+          "It feared it would weaken the faith since Rizal criticized friars",
+          "It promoted non-Christian ideas in schools",
+          "It banned religious education in public schools"
+        ],
+        answer: 1,
+        rationale: "Church authorities argued that the unexpurgated novels contained anti-clerical critiques that would undermine the Catholic faith."
+      },
+      {
+        id: 5,
+        question: "Which of the following is NOT a reason for studying Rizal's life?",
+        options: [
+          "To foster patriotism and critical thinking",
+          "To learn from his sacrifices and vision of reform",
+          "To use his writings as a mirror of Filipino society",
+          "To memorize all his poems and novels"
+        ],
+        answer: 3,
+        rationale: "The course aims at critical reflection, civic consciousness, and historical appreciation, not rote memorization."
+      },
+      {
+        id: 6,
+        question: "Who ruled the Philippines under the centralized colonial government of Spain?",
+        options: ["The Archbishop of Manila", "The Governor-General", "The King of Spain directly", "The Council of the Indies"],
+        answer: 1,
+        rationale: "The Governor-General served as the Spanish Crown's chief executive representative and commander-in-chief in the archipelago."
+      },
+      {
+        id: 7,
+        question: "In what year did Manila open to world trade, contributing to the rise of the ilustrado class?",
+        options: ["1815", "1834", "1872", "1850"],
+        answer: 1,
+        rationale: "The royal decree of 1834 officially opened the port of Manila to foreign commerce, spurring commercial agriculture."
+      },
+      {
+        id: 8,
+        question: "Which term refers to Spaniards born in the Philippines under the colonial social hierarchy?",
+        options: ["Peninsulares", "Indios", "Insulares", "Principalia"],
+        answer: 2,
+        rationale: "Insulares (or criollos) were ethnic Spaniards born in the colonies, distinct from Peninsulares born in the Iberian peninsula."
+      },
+      {
+        id: 9,
+        question: "What were the Filipinos at the lowest level of the colonial social hierarchy called?",
+        options: ["Insulares", "Principalia", "Mestizos", "Indios"],
+        answer: 3,
+        rationale: "'Indio' was the colonial designation for the indigenous native inhabitants."
+      },
+      {
+        id: 10,
+        question: "The end of the Galleon Trade in 1815 led to which of the following?",
+        options: [
+          "Closure of Manila to foreign trade",
+          "New economic structures in the Philippines",
+          "Spanish withdrawal from the Philippines",
+          "Rise of the Katipunan"
+        ],
+        answer: 1,
+        rationale: "Terminating the state monopoly shifted the economy toward cash-crop production and merchant integration with world markets."
+      },
+      {
+        id: 11,
+        question: "Which export crops expanded the Philippine economy during the 19th century?",
+        options: ["Rice, corn, and coffee", "Sugar, tobacco, and abaca", "Cotton, wheat, and rubber", "Coconut, banana, and mango"],
+        answer: 1,
+        rationale: "Sugar, tobacco, and abaca (Manila hemp) became the top commercial agricultural staples driving economic growth."
+      },
+      {
+        id: 12,
+        question: "Which revolution MOST directly inspired Filipino ilustrados during the 19th century?",
+        options: [
+          "Industrial Revolution in England",
+          "Russian Revolution",
+          "French and American Revolutions",
+          "Chinese Nationalist Revolution"
+        ],
+        answer: 2,
+        rationale: "The ideals of liberty, equality, and popular sovereignty from the French and American Revolutions influenced enlightened Filipino thinkers."
+      },
+      {
+        id: 13,
+        question: "Where was Jose Rizal born?",
+        options: ["Manila", "Batangas", "Calamba, Laguna", "Bulacan"],
+        answer: 2,
+        rationale: "Rizal was born in Calamba, Laguna, adjacent to Laguna de Bay."
+      },
+      {
+        id: 14,
+        question: "On what date was Jose Rizal born?",
+        options: ["June 19, 1860", "June 19, 1861", "July 19, 1861", "June 12, 1861"],
+        answer: 1,
+        rationale: "Jose Rizal was born on the night of June 19, 1861."
+      },
+      {
+        id: 15,
+        question: "Who baptized Jose Rizal at Calamba Catholic Church?",
+        options: ["Father Pedro Casanas", "Father Rufino Collantes", "Father Burgos", "Father Damaso"],
+        answer: 1,
+        rationale: "Father Rufino Collantes, the parish priest of Calamba, administered the sacrament of baptism."
+      },
+      {
+        id: 16,
+        question: "Who was Rizal's godfather during his baptism?",
+        options: ["Francisco Mercado", "Father Rufino Collantes", "Pedro Casanas", "Manuel Xerez Burgos"],
+        answer: 2,
+        rationale: "Father Pedro Casanas, a close family friend from Calamba, stood as his baptismal godfather."
+      },
+      {
+        id: 17,
+        question: "What was Rizal's birth order among his siblings?",
+        options: ["First child", "Third child", "Seventh child", "Tenth child"],
+        answer: 2,
+        rationale: "Jose was the 7th child among eleven children born to Francisco Mercado and Teodora Alonso."
+      },
+      {
+        id: 18,
+        question: "How many children did the Rizal-Mercado family have in total?",
+        options: ["Seven", "Nine", "Ten", "Eleven"],
+        answer: 3,
+        rationale: "The family comprised 11 children (9 daughters and 2 sons: Paciano and Jose)."
+      },
+      {
+        id: 19,
+        question: "How is Rizal's father Francisco Mercado best described?",
+        options: [
+          "A wealthy landowner and politician",
+          "A tenant farmer who was industrious and respected",
+          "A friar administrator in Calamba",
+          "A merchant who traded with China"
+        ],
+        answer: 1,
+        rationale: "Don Francisco managed tenant lands owned by the Dominican Order, earning respect through diligence and agricultural productivity."
+      },
+      {
+        id: 20,
+        question: "What best describes the influence of Rizal's mother, Teodora Alonso?",
+        options: [
+          "She pushed him toward a military career",
+          "She was uneducated but hardworking",
+          "She was a well-educated moral and religious influence",
+          "She discouraged his studies abroad"
+        ],
+        answer: 2,
+        rationale: "Doña Teodora was cultured, educated at the Colegio de Santa Rosa, and served as his first teacher of reading and piety."
+      },
+      {
+        id: 21,
+        question: "Who first taught Rizal how to read and pray before he went to school?",
+        options: ["His father Francisco Mercado", "His teacher Maestro Justiniano Cruz", "His mother Teodora Alonso", "His uncle Jose Alberto"],
+        answer: 2,
+        rationale: "His mother Teodora introduced him to the alphabet, prayers, and the famous parable of the moth."
+      },
+      {
+        id: 22,
+        question: "At what age did Rizal go to Binan to study?",
+        options: ["Age 6", "Age 7", "Age 9", "Age 12"],
+        answer: 2,
+        rationale: "Rizal left Calamba for Biñan in June 1869 when he was approximately nine years old."
+      },
+      {
+        id: 23,
+        question: "Who was Rizal's teacher in Binan?",
+        options: ["Maestro Pedro Casanas", "Maestro Justiniano Cruz", "Maestro Francisco Mercado", "Maestro Manuel Xerez Burgos"],
+        answer: 1,
+        rationale: "Maestro Justiniano Aquino Cruz ran the village school in Biñan."
+      },
+      {
+        id: 24,
+        question: "Which subjects did Rizal primarily study in Binan?",
+        options: ["Science and philosophy", "Latin, Spanish, and arithmetic", "Tagalog, music, and painting", "History and theology"],
+        answer: 1,
+        rationale: "The standard primary curriculum emphasized Latin grammar, the Spanish language, and basic arithmetic."
+      },
+      {
+        id: 25,
+        question: "Which uncle taught Rizal painting during his time in Binan?",
+        options: ["Uncle Manuel", "Uncle Paciano", "Uncle Jose Alberto", "Uncle Pedro"],
+        answer: 2,
+        rationale: "Uncle Jose Alberto inspired his artistic sensibilities and sketching skills."
+      },
+      {
+        id: 26,
+        question: "How did Rizal gain entry to Ateneo Municipal de Manila?",
+        options: [
+          "He passed the entrance examination with top marks",
+          "His father paid a large donation to the school",
+          "He was helped by Dr. Manuel Xerez Burgos, nephew of Padre Burgos",
+          "He was accepted through a scholarship from the Governor-General"
+        ],
+        answer: 2,
+        rationale: "When initially rejected due to late registration and frail physique, Dr. Manuel Xerez Burgos intervened on his behalf."
+      },
+      {
+        id: 27,
+        question: "What was the competitive school system called at Ateneo Municipal?",
+        options: [
+          "Greeks vs. Romans",
+          "Roman Empire vs. Carthaginian Empire",
+          "Spanish vs. Filipino students",
+          "Christian vs. pagan teams"
+        ],
+        answer: 1,
+        rationale: "The Jesuit pedagogical method grouped boarding students and day students into the Roman and Carthaginian Empires."
+      },
+      {
+        id: 28,
+        question: "What title did Rizal earn in his class at Ateneo?",
+        options: ["King", "Champion", "Emperor", "Grand Master"],
+        answer: 2,
+        rationale: "The top performing student in each empire group at Ateneo was designated 'Emperor'."
+      },
+      {
+        id: 29,
+        question: "To whom did Rizal dedicate his early poem 'Mi Primera Inspiracion'?",
+        options: ["His father", "His country", "His mother", "The Virgin Mary"],
+        answer: 2,
+        rationale: "'Mi Primera Inspiración' (My First Inspiration) was written for his mother on her birthday."
+      },
+      {
+        id: 30,
+        question: "What tragic event in 1872 deeply affected young Rizal at Ateneo?",
+        options: [
+          "The death of his mother",
+          "The Cavite Mutiny and execution of Gomburza",
+          "The burning of the Ateneo library",
+          "The expulsion of Filipino students"
+        ],
+        answer: 1,
+        rationale: "The martyrdom of Fathers Gomez, Burgos, and Zamora in 1872 awakened his sense of colonial injustice."
+      },
+      {
+        id: 31,
+        question: "What degree did Rizal earn when he graduated from Ateneo in 1877?",
+        options: ["Doctor of Philosophy", "Bachelor of Science", "Bachiller en Artes", "Licentiate in Medicine"],
+        answer: 2,
+        rationale: "He completed his secondary education with the highest academic honors, earning the Bachiller en Artes degree."
+      },
+      {
+        id: 32,
+        question: "Who were the Gomburza?",
+        options: [
+          "Three Filipino reformists who wrote La Solidaridad",
+          "Three Filipino priests executed after the Cavite Mutiny",
+          "Three ilustrados who founded the Propaganda Movement",
+          "Three Ateneo professors who mentored Rizal"
+        ],
+        answer: 1,
+        rationale: "Fathers Mariano Gomez, Jose Burgos, and Jacinto Zamora were secular priests unjustly garroted after the 1872 mutiny."
+      },
+      {
+        id: 33,
+        question: "Why did Rizal shift his studies to medicine at the University of Santo Tomas?",
+        options: [
+          "He wanted to become rich and famous",
+          "He was inspired by a Spanish doctor in Manila",
+          "He wanted to cure his mother's blindness (ophthalmology)",
+          "His father forced him to study medicine"
+        ],
+        answer: 2,
+        rationale: "After studying philosophy and letters, he shifted to medicine specifically to treat his mother's failing eyesight."
+      },
+      {
+        id: 34,
+        question: "What did Rizal experience at the University of Santo Tomas that deepened his nationalism?",
+        options: [
+          "Warm acceptance and mentorship by Spanish professors",
+          "Discrimination from Spanish professors and students",
+          "A scholarship to study abroad",
+          "Recognition as top student by the rector"
+        ],
+        answer: 1,
+        rationale: "Rizal encountered hostility, racial condescension, and outdated scholastic teaching methods at UST."
+      },
+      {
+        id: 35,
+        question: "What growing awareness did Rizal develop during his years at UST?",
+        options: [
+          "The need for violent revolution against Spain",
+          "The importance of friar control in education",
+          "Awareness of injustices against Filipinos",
+          "The value of converting Filipinos to Protestantism"
+        ],
+        answer: 2,
+        rationale: "Observing discrimination firsthand catalyzed his awareness of systemic colonial injustice against Filipinos."
+      },
+      {
+        id: 36,
+        question: "Why did Rizal secretly leave the Philippines in 1882?",
+        options: [
+          "He was exiled by the Governor-General",
+          "To avoid friar opposition to his studies abroad",
+          "His family sent him away for safety",
+          "He was offered a scholarship by the Spanish government"
+        ],
+        answer: 1,
+        rationale: "His departure was kept secret from colonial authorities and friars to avoid travel obstruction."
+      },
+      {
+        id: 37,
+        question: "What ship did Rizal board when he secretly left the Philippines on May 3, 1882?",
+        options: ["El Cano", "Salvadora", "Manila", "Espana"],
+        answer: 1,
+        rationale: "He departed Manila aboard the Spanish steamer SS Salvadora bound for Singapore."
+      },
+      {
+        id: 38,
+        question: "Where did Rizal study medicine and philosophy during his first trip abroad?",
+        options: ["Universidad de Paris", "University of Berlin", "Universidad Central de Madrid", "University of London"],
+        answer: 2,
+        rationale: "He enrolled at the Universidad Central de Madrid in Spain to complete his licentiate degrees."
+      },
+      {
+        id: 39,
+        question: "Which Filipino student organization did Rizal join in Europe?",
+        options: ["La Liga Filipina", "Katipunan", "Circulo Hispano-Filipino", "Propaganda Movement"],
+        answer: 2,
+        rationale: "The Círculo Hispano-Filipino was a society of Filipino expatriates and Spanish sympathizers in Madrid."
+      },
+      {
+        id: 40,
+        question: "In how many languages was Rizal reportedly proficient?",
+        options: ["More than 5", "More than 10", "Exactly 7", "More than 20"],
+        answer: 1,
+        rationale: "Rizal was a gifted polyglot who could read and converse in over ten (around 22 documented) languages."
+      },
+      {
+        id: 41,
+        question: "Under which doctor did Rizal specialize in ophthalmology in Paris?",
+        options: ["Dr. Rudolf Virchow", "Dr. Maximo Viola", "Dr. Louis de Weckert", "Dr. Ferdinand Blumentritt"],
+        answer: 2,
+        rationale: "Dr. Louis de Weckert was a leading French ophthalmologist with whom Rizal apprenticed."
+      },
+      {
+        id: 42,
+        question: "Where did Rizal continue his ophthalmological studies after Paris?",
+        options: ["London and Rome", "Heidelberg, Leipzig, and Berlin", "Vienna and Prague", "Brussels and Amsterdam"],
+        answer: 1,
+        rationale: "He moved to Germany, studying at the University of Heidelberg and attending clinics in Leipzig and Berlin."
+      },
+      {
+        id: 43,
+        question: "Who was the famous scholar Rizal met in Germany, known as the father of pathology?",
+        options: ["Dr. Maximo Viola", "Dr. Ferdinand Blumentritt", "Dr. Louis de Weckert", "Dr. Rudolf Virchow"],
+        answer: 3,
+        rationale: "Dr. Rudolf Virchow was the renowned German pathologist and anthropologist who befriended Rizal in Berlin."
+      },
+      {
+        id: 44,
+        question: "To what scholarly group was Rizal admitted during his stay in Berlin?",
+        options: ["Royal Society of London", "French Academy of Sciences", "Berlin's Anthropological Society", "Madrid's Geographic Society"],
+        answer: 2,
+        rationale: "Sponsored by Dr. Virchow, Rizal presented a scholarly paper on Tagalog metrical art to the Anthropological Society."
+      },
+      {
+        id: 45,
+        question: "In what year and city did Rizal complete Noli Me Tangere?",
+        options: ["Madrid, 1885", "Paris, 1886", "Berlin, 1887", "Heidelberg, 1888"],
+        answer: 2,
+        rationale: "Rizal finished writing and published the Noli Me Tangere in Berlin in March 1887."
+      },
+      {
+        id: 46,
+        question: "Who financially helped Rizal publish Noli Me Tangere?",
+        options: ["Ferdinand Blumentritt", "Dr. Maximo Viola", "Governor-General Terrero", "Teodora Alonso"],
+        answer: 1,
+        rationale: "Dr. Maximo Viola loaned the funds necessary to print the first edition in Berlin."
+      },
+      {
+        id: 47,
+        question: "How many copies of Noli Me Tangere were initially published?",
+        options: ["500", "1,000", "2,000", "5,000"],
+        answer: 2,
+        rationale: "The Berlin print run produced 2,000 copies of the novel."
+      },
+      {
+        id: 48,
+        question: "What is the English translation of 'Noli Me Tangere'?",
+        options: ["Rise of a Nation", "Social Cancer", "Touch Me Not", "The Awakening"],
+        answer: 2,
+        rationale: "'Noli Me Tangere' is Latin for 'Touch Me Not'."
+      },
+      {
+        id: 49,
+        question: "Where in the Bible does the title 'Noli Me Tangere' originate?",
+        options: ["Matthew 5:14", "John 20:17", "Luke 1:28", "Mark 3:10"],
+        answer: 1,
+        rationale: "The phrase originates from the Gospel of John 20:17 in the Latin Vulgate."
+      },
+      {
+        id: 50,
+        question: "Which character in Noli Me Tangere represents the ideal reformist?",
+        options: ["Elias", "Padre Damaso", "Maria Clara", "Crisostomo Ibarra"],
+        answer: 3,
+        rationale: "Juan Crisostomo Ibarra embodies the European-educated reformist advocating progress through modern schooling."
+      },
+      {
+        id: 51,
+        question: "Which character in Noli Me Tangere represents friar abuses?",
+        options: ["Elias", "Crisostomo Ibarra", "Padre Damaso", "Maria Clara"],
+        answer: 2,
+        rationale: "Padre Dámaso typifies the arrogant, corrupt, and abusive Spanish friar."
+      },
+      {
+        id: 52,
+        question: "Which character in Noli Me Tangere is described as the revolutionary?",
+        options: ["Padre Damaso", "Maria Clara", "Crisostomo Ibarra", "Elias"],
+        answer: 3,
+        rationale: "Elias represents the disenfranchised masses who have lost faith in peaceful petitions."
+      },
+      {
+        id: 53,
+        question: "Which of the following is NOT a theme of Noli Me Tangere?",
+        options: [
+          "Oppression and social injustice",
+          "Friar hypocrisy",
+          "Need for peaceful reforms through education",
+          "Call for immediate armed revolution"
+        ],
+        answer: 3,
+        rationale: "Noli Me Tangere advocates civic consciousness and education, not an immediate violent revolt."
+      },
+      {
+        id: 54,
+        question: "What was the reaction of the Catholic friars to Noli Me Tangere?",
+        options: [
+          "They praised it as an accurate portrayal of Philippine society",
+          "They condemned it as heretical and dangerous",
+          "They ignored it as irrelevant",
+          "They used it to defend colonial reforms"
+        ],
+        answer: 1,
+        rationale: "Religious orders furiously banned the book and branded it scandalous, heretical, and treasonous."
+      },
+      {
+        id: 55,
+        question: "When did Rizal return to the Philippines for his first homecoming?",
+        options: ["June 1885", "August 1887", "January 1888", "December 1887"],
+        answer: 1,
+        rationale: "Rizal sailed home and arrived back in the Philippines in August 1887."
+      },
+      {
+        id: 56,
+        question: "On what specific date did Rizal arrive in Calamba during his first homecoming?",
+        options: ["August 1, 1887", "August 8, 1887", "August 15, 1887", "September 1, 1887"],
+        answer: 1,
+        rationale: "Rizal reached his ancestral home in Calamba on August 8, 1887."
+      },
+      {
+        id: 57,
+        question: "Who was Rizal's first patient when he opened his clinic in Calamba?",
+        options: ["His father Francisco", "His brother Paciano", "His mother Teodora", "A poor farmer from the hacienda"],
+        answer: 2,
+        rationale: "His first medical patient was his beloved mother, Doña Teodora."
+      },
+      {
+        id: 58,
+        question: "Why could Rizal NOT immediately operate on his mother's cataracts upon his return?",
+        options: [
+          "He lacked the proper medical instruments",
+          "The cataracts were not yet ripe",
+          "Spanish authorities prohibited him from practicing",
+          "His mother refused the operation"
+        ],
+        answer: 1,
+        rationale: "The cataracts had not sufficiently matured for surgical extraction."
+      },
+      {
+        id: 59,
+        question: "What institution declared Noli Me Tangere 'heretical, impious, and scandalous' after its arrival in the Philippines?",
+        options: [
+          "The Governor-General's office",
+          "The Spanish Permanent Commission of Censorship",
+          "University of Santo Tomas (UST)",
+          "The Manila Archdiocese"
+        ],
+        answer: 2,
+        rationale: "A special committee of the faculty of the University of Santo Tomas evaluated the novel and labeled it heretical and defamatory."
+      },
+      {
+        id: 60,
+        question: "What land dispute did Rizal get involved in during his first homecoming?",
+        options: [
+          "Conflicts over rice fields in Laguna",
+          "Calamba Hacienda disputes between tenants and Dominican friars",
+          "A legal battle between his father and a Spanish merchant",
+          "A border dispute between Calamba and neighboring towns"
+        ],
+        answer: 1,
+        rationale: "Rizal investigated the Dominican estate conditions and helped draft tenant petitions detailing abusive rental practices."
+      },
+      {
+        id: 61,
+        question: "What did Rizal observe in his 1888 letter to Blumentritt about Hong Kong?",
+        options: [
+          "That the British were worse colonizers than the Spanish",
+          "That it was a beautiful and free city where even the poor could speak freely",
+          "That Filipinos in Hong Kong were suffering under British rule",
+          "That Hong Kong's prosperity was built on Filipino labor"
+        ],
+        answer: 1,
+        rationale: "Rizal noted the British colony's civic freedoms, cleanliness, and commercial liberty."
+      },
+      {
+        id: 62,
+        question: "What aspect of Japan most impressed Rizal during his observations in 1888?",
+        options: [
+          "Japan's military power and samurai tradition",
+          "Japan's modernization, discipline, and nationalism",
+          "Japan's refusal to trade with Western powers",
+          "Japan's rejection of Asian cultural traditions"
+        ],
+        answer: 1,
+        rationale: "He admired the industry, cleanliness, civic order, and national pride of the Japanese people."
+      },
+      {
+        id: 63,
+        question: "What was the purpose of Rizal's Borneo Colonization Plan (1892)?",
+        options: [
+          "To establish a Filipino military base abroad",
+          "To create a Filipino colony to rival Spain's influence",
+          "To provide Calamba tenants land free from friar control in Borneo",
+          "To expand trade routes to Southeast Asia"
+        ],
+        answer: 2,
+        rationale: "The 'New Calamba' project aimed to relocate evicted Calamba farming families to British North Borneo."
+      },
+      {
+        id: 64,
+        question: "Why did the Spanish government block Rizal's Borneo colonization plan?",
+        options: [
+          "They feared the British would use Filipinos against Spain",
+          "They feared mass migration would weaken their control over the Philippines",
+          "They believed Borneo was too dangerous for Filipino settlers",
+          "The British authorities denied permission to Rizal"
+        ],
+        answer: 1,
+        rationale: "Governor-General Despujol rejected it, arguing the Philippines needed its labor and emigration would hurt Spanish prestige."
+      },
+      {
+        id: 65,
+        question: "What was the central argument of Rizal's essay 'La Indolencia de los Filipinos'?",
+        options: [
+          "Filipinos were naturally lazy due to tropical climate",
+          "Filipino indolence was caused by colonial exploitation, not natural traits",
+          "Filipinos needed Spanish guidance to become industrious",
+          "Filipino culture was inferior to European civilization"
+        ],
+        answer: 1,
+        rationale: "Rizal argued that perceived indolence was an outcome of colonial misrule, forced labor, lack of incentives, and monopolistic exploitation."
+      },
+      {
+        id: 66,
+        question: "In 'Filipinas dentro de Cien Anos,' what future possibilities for the Philippines did Rizal foresee?",
+        options: [
+          "Permanent Spanish rule",
+          "Assimilation with Spain, colonization by another power, or independence",
+          "A commonwealth status under the US",
+          "A confederation of Southeast Asian nations"
+        ],
+        answer: 1,
+        rationale: "He presciently predicted that Spain would either grant representation or lose the islands through revolution and potential American interest."
+      },
+      {
+        id: 67,
+        question: "Where was La Liga Filipina founded and on what date?",
+        options: ["Hong Kong, June 1892", "Manila, July 3, 1892", "Dapitan, August 1892", "Berlin, October 1891"],
+        answer: 1,
+        rationale: "Rizal organized La Liga Filipina in Tondo, Manila, on the evening of July 3, 1892."
+      },
+      {
+        id: 68,
+        question: "What was the primary aim of La Liga Filipina?",
+        options: [
+          "Armed overthrow of the Spanish colonial government",
+          "Peaceful reform, civic unity, and mutual aid",
+          "Establishment of a separate Filipino church",
+          "Emigration of all Filipinos to Borneo"
+        ],
+        answer: 1,
+        rationale: "Its constitution prioritized unifying the archipelago into a compact body and mutual protection and development."
+      },
+      {
+        id: 69,
+        question: "What happened to Rizal just four days after founding La Liga Filipina?",
+        options: [
+          "He was celebrated as a national hero",
+          "He was arrested and exiled to Dapitan",
+          "He was promoted to the position of colonial adviser",
+          "He fled to Hong Kong to avoid capture"
+        ],
+        answer: 1,
+        rationale: "On July 6-7, 1892, Governor-General Despujol ordered Rizal's arrest and subsequent banishment to Dapitan."
+      },
+      {
+        id: 70,
+        question: "On what date was Rizal deported to Dapitan?",
+        options: ["June 3, 1892", "July 17, 1892", "August 1, 1892", "December 30, 1892"],
+        answer: 1,
+        rationale: "Rizal landed in Dapitan, Zamboanga del Norte on July 17, 1892 to begin his four-year exile."
+      },
+      {
+        id: 71,
+        question: "In what field did Rizal primarily serve the people of Dapitan professionally?",
+        options: [
+          "As a lawyer defending tenants",
+          "As a teacher of philosophy",
+          "As an ophthalmologist providing free treatment",
+          "As a government administrator"
+        ],
+        answer: 2,
+        rationale: "He set up a clinic where he treated townspeople and indigent patients without charging fees."
+      },
+      {
+        id: 72,
+        question: "What civic infrastructure did Rizal build for Dapitan during his exile?",
+        options: [
+          "A church and hospital",
+          "A water system, improved town plaza, and street lighting",
+          "A port and trading post",
+          "A military barracks and armory"
+        ],
+        answer: 1,
+        rationale: "Rizal constructed a potable waterworks pipeline, introduced coconut-oil streetlamps, and landscaped the town plaza."
+      },
+      {
+        id: 73,
+        question: "Who did Rizal live with during his exile in Dapitan?",
+        options: ["Maria Clara", "Leonor Rivera", "Josephine Bracken", "His sister Narcisa"],
+        answer: 2,
+        rationale: "Josephine Bracken became his companion and common-law wife during his Dapitan years."
+      },
+      {
+        id: 74,
+        question: "What happened to the child of Rizal and Josephine Bracken?",
+        options: [
+          "The child survived and was raised in Manila",
+          "The child died shortly after birth",
+          "The child was taken by the Spanish authorities",
+          "The child was sent to study in Europe"
+        ],
+        answer: 1,
+        rationale: "Their premature baby boy, named Francisco, lived for only a few hours."
+      },
+      {
+        id: 75,
+        question: "What unique invention is credited to Rizal during his Dapitan exile?",
+        options: [
+          "A printing press for pamphlets",
+          "A water irrigation system",
+          "A sulpukan (lighter/fire-starter)",
+          "A telegraph device"
+        ],
+        answer: 2,
+        rationale: "Rizal invented the 'sulpukan', a wooden cigarette lighter based on compressed air."
+      },
+      {
+        id: 76,
+        question: "Why did Rizal leave Dapitan on July 31, 1896?",
+        options: [
+          "He was freed by the Governor-General after public pressure",
+          "He escaped with help from the Katipunan",
+          "He left to serve as a military doctor in Cuba",
+          "He was transferred to Fort Santiago for trial"
+        ],
+        answer: 2,
+        rationale: "His application to volunteer as an army physician in war-torn Cuba was granted by Governor-General Blanco."
+      },
+      {
+        id: 77,
+        question: "What event led to Rizal's arrest en route after leaving Dapitan?",
+        options: [
+          "He was caught smuggling anti-colonial pamphlets",
+          "La Liga Filipina was declared illegal",
+          "The Philippine Revolution broke out in August 1896",
+          "He was betrayed by a Katipunan spy"
+        ],
+        answer: 2,
+        rationale: "The premature outbreak of the Katipunan uprising led Spanish officials to arrest him while aboard ship to Spain."
+      },
+      {
+        id: 78,
+        question: "Where was Rizal incarcerated after his arrest in 1896?",
+        options: ["Bilibid Prison", "Fort Santiago", "Intramuros Jail", "Manila Bay detention center"],
+        answer: 1,
+        rationale: "He was returned to Manila and confined in Fort Santiago within Intramuros."
+      },
+      {
+        id: 79,
+        question: "Which of the following was NOT one of the charges against Rizal during his 1896 trial?",
+        options: ["Founding illegal societies", "Inciting rebellion", "Sedition against Spain", "Murder of a colonial officer"],
+        answer: 3,
+        rationale: "The official charges were rebellion, sedition, and illegal association—not homicide or murder."
+      },
+      {
+        id: 80,
+        question: "How did Rizal defend himself during the trial?",
+        options: [
+          "He admitted to organizing the Katipunan",
+          "He argued his writings were calls to armed revolution",
+          "He denied Katipunan involvement and argued his writings were critiques, not rebellion",
+          "He refused to speak during the trial proceedings"
+        ],
+        answer: 2,
+        rationale: "Rizal wrote an extensive memorandum stating he consistently opposed armed insurrection and advocated civic enlightenment."
+      },
+      {
+        id: 81,
+        question: "How do historians characterize Rizal's 1896 military trial?",
+        options: [
+          "A fair legal process that followed due procedure",
+          "A politically motivated show trial, not legally just",
+          "An impartial international tribunal",
+          "A process where Rizal was given every opportunity to defend himself"
+        ],
+        answer: 1,
+        rationale: "The court-martial disregarded normal rules of evidence, denying him cross-examination of witnesses."
+      },
+      {
+        id: 82,
+        question: "What sentence was handed down at Rizal's trial?",
+        options: ["Life imprisonment", "Exile to a foreign country", "Death by firing squad", "Hard labor in Mindanao"],
+        answer: 2,
+        rationale: "Governor-General Camilo de Polavieja affirmed the death sentence by firing squad."
+      },
+      {
+        id: 83,
+        question: "Where was Rizal executed on December 30, 1896?",
+        options: ["Fort Santiago", "Intramuros", "Bagumbayan (Luneta/Rizal Park)", "Calamba, Laguna"],
+        answer: 2,
+        rationale: "The execution took place at the Bagumbayan field (now Luneta / Rizal Park) at 7:03 a.m."
+      },
+      {
+        id: 84,
+        question: "What poem did Rizal write as his farewell, smuggled inside a lamp?",
+        options: ["Mi Primera Inspiracion", "To the Virgin Mary", "Mi Ultimo Adios", "The Philippines a Century Hence"],
+        answer: 2,
+        rationale: "His untitled farewell masterpiece was posthumously titled 'Mi Último Adiós' by Mariano Ponce."
+      },
+      {
+        id: 85,
+        question: "What ceremony did Rizal perform just before his execution?",
+        options: [
+          "He received last rites from a Filipino priest",
+          "He married Josephine Bracken in articulo mortis",
+          "He publicly recanted his criticisms of the friars",
+          "He blessed the Philippine flag"
+        ],
+        answer: 1,
+        rationale: "Historical accounts record a brief Catholic wedding ceremony with Josephine Bracken hours before his execution."
+      },
+      {
+        id: 86,
+        question: "What was significant about the direction Rizal faced as he fell during his execution?",
+        options: [
+          "He faced Manila Bay as a symbol of freedom",
+          "He fell facing away from Spain as an act of defiance",
+          "He turned as he fell so he faced the sky, becoming a symbol of dignity",
+          "He faced the firing squad as he had requested"
+        ],
+        answer: 2,
+        rationale: "Denied the request to face the squad, he twisted his falling body so he died face-up toward the morning sun and sky."
+      },
+      {
+        id: 87,
+        question: "What was the ultimate effect of Rizal's execution on Philippine nationalism?",
+        options: [
+          "It ended the Philippine Revolution",
+          "It demoralized reformists and stopped the Propaganda Movement",
+          "It unified Filipinos and inspired the Revolution",
+          "It caused Spain to grant the Philippines limited autonomy"
+        ],
+        answer: 2,
+        rationale: "His martyrdom galvanized the Philippine Revolution and sealed the delegitimization of Spanish colonial rule."
+      },
+      {
+        id: 88,
+        question: "Who originally wrote the book 'Sucesos de las Islas Filipinas'?",
+        options: ["Jose Rizal", "Ferdinand Blumentritt", "Antonio de Morga", "Andres Bonifacio"],
+        answer: 2,
+        rationale: "Dr. Antonio de Morga, a 17th-century Spanish jurist and royal auditor, published the chronicle."
+      },
+      {
+        id: 89,
+        question: "When was the original 'Sucesos de las Islas Filipinas' first published?",
+        options: ["1565", "1609", "1715", "1890"],
+        answer: 1,
+        rationale: "Morga's original work was published in Mexico in 1609."
+      },
+      {
+        id: 90,
+        question: "When and where did Rizal publish his annotated edition of Morga's work?",
+        options: ["1887, Berlin", "1889, London", "1890, Paris", "1892, Hong Kong"],
+        answer: 2,
+        rationale: "After transcribing it at the British Museum in London, Rizal had it printed in Paris in 1890."
+      },
+      {
+        id: 91,
+        question: "What was Rizal's PRIMARY purpose in annotating Morga's 'Sucesos de las Islas Filipinas'?",
+        options: [
+          "To celebrate Spanish colonial achievements in the Philippines",
+          "To reclaim precolonial Filipino history and challenge colonial narratives",
+          "To expose the cruelty of indigenous Filipino tribes",
+          "To praise the missionary work of Catholic friars"
+        ],
+        answer: 1,
+        rationale: "He sought to demonstrate that Filipinos possessed an advanced culture, industry, and commerce prior to Spanish colonization."
+      },
+      {
+        id: 92,
+        question: "What approach did Rizal employ in his annotations of Morga's work?",
+        options: [
+          "Emotional and religious argumentation",
+          "Scientific and evidence-based critical historiography",
+          "Military and political analysis",
+          "Literary and artistic criticism"
+        ],
+        answer: 1,
+        rationale: "Rizal used comparative historical sources, linguistics, and cross-referencing to validate precolonial facts."
+      },
+      {
+        id: 93,
+        question: "What precolonial Filipino achievement did Rizal highlight in his annotations of Morga?",
+        options: [
+          "Advanced knowledge of Western philosophy",
+          "Mastery of Spanish language before colonization",
+          "Social organization and trade networks with China, India, and the Malay world",
+          "A unified national government before Spanish arrival"
+        ],
+        answer: 2,
+        rationale: "He documented sophisticated indigenous trade, maritime shipbuilding, textiles, and metallurgy."
+      },
+      {
+        id: 94,
+        According_to_Rizal: "According to Rizal's annotations, how did Spanish conquest affect Filipino culture?",
+        question: "According to Rizal's annotations, how did Spanish conquest affect Filipino culture?",
+        options: [
+          "It elevated Filipinos to a higher level of civilization",
+          "It brought only benefits through Christianity and education",
+          "It destroyed much of the native culture and exploited Filipinos",
+          "It had no significant effect on precolonial Filipino traditions"
+        ],
+        answer: 2,
+        rationale: "Rizal argued that the conquest disrupted flourishing native industries, subjugating people into dependency."
+      },
+      {
+        id: 95,
+        question: "What later Filipino scholar's framework (Pantayong Pananaw) is linked to Rizal's Filipino-centered historiography?",
+        options: ["Nick Joaquin", "Zeus Salazar", "Ambeth Ocampo", "Teodoro Agoncillo"],
+        answer: 1,
+        rationale: "Historian Zeus Salazar developed Pantayong Pananaw, building on the tradition of analyzing Philippine history from the native perspective."
+      },
+      {
+        id: 96,
+        question: "Which of the following BEST describes Dapitan as Rizal's 'laboratory of nationhood'?",
+        options: [
+          "He planned an armed uprising from Dapitan",
+          "He demonstrated that reforms were possible through science, education, and civic projects",
+          "He trained Katipunan fighters in secret in Dapitan",
+          "He wrote El Filibusterismo entirely while in Dapitan"
+        ],
+        answer: 1,
+        rationale: "In Dapitan, Rizal practically realized his vision of civic self-reliance, modern schooling, and public sanitation."
+      },
+      {
+        id: 97,
+        question: "What consistent theme runs through all of Rizal's advocacy from his novels to La Liga Filipina?",
+        options: [
+          "Violent overthrow of colonial government",
+          "Peaceful reform through education, civic action, and intellectual work",
+          "Emigration of Filipinos to free lands abroad",
+          "Alliance with foreign powers to defeat Spain"
+        ],
+        answer: 1,
+        rationale: "Throughout his career, Rizal maintained that lasting liberty requires national dignity, civic unity, and education."
+      },
+      {
+        id: 98,
+        question: "Which publication became the main platform for Rizal's reformist essays such as 'La Indolencia de los Filipinos'?",
+        options: ["El Renacimiento", "La Solidaridad", "Diariong Tagalog", "La Opinion"],
+        answer: 1,
+        rationale: "La Solidaridad served as the premier newspaper organ of the Propaganda Movement in Spain."
+      },
+      {
+        id: 99,
+        question: "What does the arc of Rizal's life demonstrate about colonial societies?",
+        options: [
+          "That peaceful reform always succeeds under colonial rule",
+          "That colonial powers easily suppress all forms of resistance",
+          "That colonial authorities often radicalize moderates through repression",
+          "That literature has no power against military force"
+        ],
+        answer: 2,
+        rationale: "By brutally executing a moderate peaceful reformer, colonial Spain alienated the population and propelled total revolution."
+      },
+      {
+        id: 100,
+        question: "Which of the following BEST summarizes Rizal's dual legacy?",
+        options: [
+          "He was both a poet and a revolutionary soldier",
+          "He was a man of action (civic service, medicine) and a man of ideas (rewriting history, reformist literature)",
+          "He was primarily a scientist who also wrote novels on the side",
+          "He was a failed reformist who succeeded only as a martyr"
+        ],
+        answer: 1,
+        rationale: "Rizal seamlessly synthesized profound intellectual scholarship and literature with pragmatic community building and medicine."
+      }
+    ];
+
+    // State Variables
+    let currentIndex = 0;
+    const userAnswers = new Array(quizData.length).fill(null);
+    const flaggedQuestions = new Set();
+    let currentFilter = 'all';
+
+    // Elements
+    const qNumEl = document.getElementById('current-q-num');
+    const qTextEl = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const explanationBox = document.getElementById('explanation-box');
+    const answeredCounter = document.getElementById('answered-counter');
+    const scoreCounter = document.getElementById('score-counter');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const progressPercent = document.getElementById('progress-percent');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const flagBtn = document.getElementById('flag-btn');
+    const flagIcon = document.getElementById('flag-icon');
+    const navGrid = document.getElementById('navigator-grid');
+    const sidebar = document.getElementById('sidebar');
+
+    // Init function
+    function init() {
+      buildNavigatorGrid();
+      renderQuestion();
+      updateMetrics();
+      setupSidebarToggle();
+    }
+
+    // Build sidebar navigator buttons
+    function buildNavigatorGrid() {
+      navGrid.innerHTML = '';
+      quizData.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `nav-btn-${idx}`;
+        btn.className = `h-9 w-full rounded-xl text-xs font-semibold flex items-center justify-center border transition-all duration-150`;
+        btn.textContent = idx + 1;
+        btn.onclick = () => {
+          currentIndex = idx;
+          renderQuestion();
+          if (window.innerWidth < 1024) {
+            sidebar.classList.add('hidden');
+          }
+        };
+        navGrid.appendChild(btn);
+      });
+      updateGridButtonStyles();
+    }
+
+    // Render current question
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      qNumEl.textContent = q.id;
+      qTextEl.textContent = q.question;
+
+      // Update Flag icon status
+      if (flaggedQuestions.has(currentIndex)) {
+        flagIcon.setAttribute('fill', '#d97706');
+        flagIcon.classList.add('text-amber-600');
+      } else {
+        flagIcon.setAttribute('fill', 'none');
+        flagIcon.classList.remove('text-amber-600');
+      }
+
+      // Render Options
+      optionsContainer.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      const currentSelection = userAnswers[currentIndex];
+
+      q.options.forEach((optText, optIdx) => {
+        const optButton = document.createElement('button');
+        let stateStyle = "border-slate-200 hover:border-amber-400 bg-white text-slate-800";
+
+        if (currentSelection !== null) {
+          if (optIdx === q.answer) {
+            stateStyle = "border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/40";
+          } else if (currentSelection === optIdx) {
+            stateStyle = "border-rose-500 bg-rose-50 text-rose-950 ring-2 ring-rose-400/40";
+          } else {
+            stateStyle = "border-slate-100 bg-slate-50 text-slate-400 opacity-60";
+          }
+        }
+
+        optButton.className = `w-full text-left p-4 rounded-xl border text-sm font-medium transition duration-150 flex items-start gap-3 ${stateStyle}`;
+        optButton.disabled = currentSelection !== null;
+        optButton.onclick = () => selectOption(optIdx);
+
+        optButton.innerHTML = `
+          <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-xs shrink-0 ${currentSelection !== null && optIdx === q.answer ? 'bg-emerald-200 text-emerald-900' : ''}">${letters[optIdx]}</span>
+          <span class="flex-1 leading-relaxed">${optText}</span>
+        `;
+        optionsContainer.appendChild(optButton);
+      });
+
+      // Render Explanation
+      if (currentSelection !== null) {
+        explanationBox.classList.remove('hidden');
+        const isRight = currentSelection === q.answer;
+        explanationBox.className = `p-4 rounded-xl text-sm border transition duration-200 mb-4 ${
+          isRight ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'
+        }`;
+
+        explanationBox.innerHTML = `
+          <div class="flex items-center gap-2 mb-1 font-bold">
+            ${isRight ? '✓ Correct!' : '✕ Incorrect'}
+          </div>
+          <p class="text-xs leading-relaxed opacity-95"><strong>Explanation:</strong> ${q.rationale}</p>
+        `;
+      } else {
+        explanationBox.classList.add('hidden');
+      }
+
+      // Prev/Next state
+      prevBtn.disabled = currentIndex === 0;
+      prevBtn.classList.toggle('opacity-50', currentIndex === 0);
+      nextBtn.textContent = currentIndex === quizData.length - 1 ? 'Finish & Summary' : 'Next';
+
+      updateGridButtonStyles();
+    }
+
+    // Select an answer
+    function selectOption(optIndex) {
+      userAnswers[currentIndex] = optIndex;
+      renderQuestion();
+      updateMetrics();
+    }
+
+    // Clear answer for current item
+    function clearCurrentSelection() {
+      userAnswers[currentIndex] = null;
+      renderQuestion();
+      updateMetrics();
+    }
+
+    // Toggle Flag
+    function toggleFlagCurrent() {
+      if (flaggedQuestions.has(currentIndex)) {
+        flaggedQuestions.delete(currentIndex);
+      } else {
+        flaggedQuestions.add(currentIndex);
+      }
+      renderQuestion();
+      applyFilterVisibility();
+    }
+
+    // Navigation logic
+    function navigate(delta) {
+      const nextIdx = currentIndex + delta;
+      if (nextIdx >= 0 && nextIdx < quizData.length) {
+        currentIndex = nextIdx;
+        renderQuestion();
+      } else if (nextIdx >= quizData.length) {
+        openOverviewModal();
+      }
+    }
+
+    // Style question grid buttons
+    function updateGridButtonStyles() {
+      quizData.forEach((q, idx) => {
+        const btn = document.getElementById(`nav-btn-${idx}`);
+        if (!btn) return;
+
+        btn.className = `h-9 w-full rounded-xl text-xs font-semibold flex items-center justify-center border transition-all duration-150`;
+
+        const isCurrent = idx === currentIndex;
+        const answer = userAnswers[idx];
+        const isFlagged = flaggedQuestions.has(idx);
+
+        if (answer !== null) {
+          if (answer === q.answer) {
+            btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+          } else {
+            btn.classList.add('bg-rose-500', 'text-white', 'border-rose-600');
+          }
+        } else {
+          btn.classList.add('bg-white', 'text-slate-700', 'border-slate-200', 'hover:bg-slate-50');
+        }
+
+        if (isCurrent) {
+          btn.classList.add('ring-2', 'ring-amber-600', 'ring-offset-2');
+        }
+
+        if (isFlagged) {
+          btn.classList.add('relative');
+          if (!btn.querySelector('.flag-dot')) {
+            const dot = document.createElement('span');
+            dot.className = 'flag-dot absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 border border-white';
+            btn.appendChild(dot);
+          }
+        } else {
+          const dot = btn.querySelector('.flag-dot');
+          if (dot) dot.remove();
+        }
+      });
+      applyFilterVisibility();
+    }
+
+    // Filter controls
+    function setFilter(filterType) {
+      currentFilter = filterType;
+      document.querySelectorAll('#sidebar button[id^="filter-"]').forEach(b => {
+        b.classList.remove('bg-amber-100', 'text-amber-900', 'font-semibold');
+        b.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const activeBtn = document.getElementById(`filter-${filterType}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+        activeBtn.classList.add('bg-amber-100', 'text-amber-900', 'font-semibold');
+      }
+      applyFilterVisibility();
+    }
+
+    function applyFilterVisibility() {
+      let count = 0;
+      quizData.forEach((_, idx) => {
+        const btn = document.getElementById(`nav-btn-${idx}`);
+        if (!btn) return;
+
+        let visible = true;
+        if (currentFilter === 'unanswered') {
+          visible = userAnswers[idx] === null;
+        } else if (currentFilter === 'flagged') {
+          visible = flaggedQuestions.has(idx);
+        }
+
+        btn.style.display = visible ? 'flex' : 'none';
+        if (visible) count++;
+      });
+      document.getElementById('filter-status-label').textContent = `${capitalize(currentFilter)} (${count})`;
+    }
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    // Update Scores & Progress Bars
+    function updateMetrics() {
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      let correctCount = 0;
+
+      userAnswers.forEach((ans, idx) => {
+        if (ans === quizData[idx].answer) correctCount++;
+      });
+
+      answeredCounter.textContent = `${answeredCount} / 100`;
+      scoreCounter.textContent = `${correctCount} pts`;
+
+      const pct = Math.round((answeredCount / quizData.length) * 100);
+      progressBarFill.style.width = `${pct}%`;
+      progressPercent.textContent = `${pct}% Completed`;
+    }
+
+    // Modal controls
+    function openOverviewModal() {
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      let correctCount = 0;
+      userAnswers.forEach((ans, idx) => {
+        if (ans === quizData[idx].answer) correctCount++;
+      });
+
+      const accuracy = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+
+      document.getElementById('modal-answered').textContent = `${answeredCount} / 100`;
+      document.getElementById('modal-correct').textContent = `${correctCount}`;
+      document.getElementById('modal-accuracy').textContent = `${accuracy}%`;
+
+      const msg = document.getElementById('modal-feedback-message');
+      if (answeredCount === 100) {
+        if (correctCount >= 90) msg.textContent = "Outstanding mastery! You have exceptional command of Rizal's life, writings, and legacy.";
+        else if (correctCount >= 75) msg.textContent = "Great job! You possess a solid grasp of the course syllabus and historical context.";
+        else msg.textContent = "Good effort! Take time to review the highlighted questions and rationales to strengthen your retention.";
+      } else {
+        msg.textContent = `You still have ${100 - answeredCount} unanswered questions. Resume whenever you're ready to complete the exam.`;
+      }
+
+      document.getElementById('overview-modal').classList.remove('hidden');
+    }
+
+    function closeOverviewModal() {
+      document.getElementById('overview-modal').classList.add('hidden');
+    }
+
+    function resetWholeQuiz() {
+      if (confirm("Are you sure you want to reset all your progress and answers?")) {
+        userAnswers.fill(null);
+        flaggedQuestions.clear();
+        currentIndex = 0;
+        closeOverviewModal();
+        renderQuestion();
+        updateMetrics();
+      }
+    }
+
+    function setupSidebarToggle() {
+      const toggleBtn = document.getElementById('toggle-sidebar-btn');
+      toggleBtn.onclick = () => {
+        sidebar.classList.toggle('hidden');
+      };
+    }
+
+    // Initialize on page load
+    window.onload = init;
+  </script>
+</body>
+</html>
